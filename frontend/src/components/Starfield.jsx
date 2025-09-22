@@ -10,20 +10,21 @@ const Starfield = () => {
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    let stars = starsRef.current;
+    const stars = starsRef.current;
 
     const resize = () => {
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
+      const { devicePixelRatio: dpr, innerWidth: w, innerHeight: h } = window;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
       
       stars.length = 0;
       for (let i = 0; i < 1200; i++) {
         stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * 1.5 * window.devicePixelRatio,
+          size: Math.random() * 1.5 * dpr,
           speed: Math.random() * 0.1 + 0.05,
           opacity: Math.random() * 0.5 + 0.2,
           twinkleSpeed: Math.random() * 0.015
@@ -35,13 +36,9 @@ const Starfield = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       stars.forEach(star => {
-        // Twinkling effect
         star.opacity += star.twinkleSpeed;
-        if (star.opacity > 1 || star.opacity < 0.2) {
-          star.twinkleSpeed *= -1;
-        }
+        if (star.opacity > 1 || star.opacity < 0.2) star.twinkleSpeed *= -1;
 
-        // Drifting effect
         star.y -= star.speed;
         if (star.y < 0) {
           star.y = canvas.height;
@@ -58,9 +55,7 @@ const Starfield = () => {
     };
 
     const handleResize = () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       resize();
       animate();
     };
@@ -71,9 +66,7 @@ const Starfield = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
   }, []);
 
@@ -81,13 +74,8 @@ const Starfield = () => {
     <canvas
       ref={canvasRef}
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: -1,
-        pointerEvents: 'none'
+        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+        zIndex: -1, pointerEvents: 'none'
       }}
     />
   );

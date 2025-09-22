@@ -2,17 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 
 const Webcam = () => {
   const videoRef = useRef(null);
-  const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const initWebcam = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          setIsStreaming(true);
-        }
+        if (videoRef.current) videoRef.current.srcObject = stream;
       } catch (err) {
         console.log('Webcam unavailable:', err);
         setError('Webcam unavailable');
@@ -22,9 +18,8 @@ const Webcam = () => {
     initWebcam();
 
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach(track => track.stop());
+      if (videoRef.current?.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
@@ -44,13 +39,7 @@ const Webcam = () => {
           <span>{error}</span>
         </div>
       ) : (
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="webcam-video"
-        />
+        <video ref={videoRef} autoPlay playsInline muted className="webcam-video" />
       )}
     </aside>
   );
